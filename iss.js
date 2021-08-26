@@ -27,7 +27,7 @@ const fetchCoordsByIP = function(ip, callback) {
     }
     // if non-200 status, assume server error
     if (response.statusCode !== 200) {
-      const msg = `Status Code ${response.statusCode} when fetching coordinates for IP. Response: ${body}`;
+      const msg = `Status Code ${response.statusCode} when fetching coordinates from IP. Response: ${body}`;
       callback(Error(msg), null);
       return;
     };
@@ -47,7 +47,7 @@ const fetchISSFlyOverTimes = function(coords, callback) {
       return
     };
     if (response.statusCode !== 200) {
-      const msg = `Status Code ${response.statusCode} when fetching passTimes for coordinates ${body}`;
+      const msg = `Status Code ${response.statusCode} when fetching passTimes from coordinates ${body}`;
       callback(Error(msg), null);
       return;
     };
@@ -58,4 +58,37 @@ const fetchISSFlyOverTimes = function(coords, callback) {
   callback(null, duration);
 };
 
-module.exports = { fetchISSFlyOverTimes };
+const nextISSTimesForMYLocation = function(callback) {
+  fetchMyIP((error, ip) => {
+    if (error) {
+      callback(error, null);
+      return;
+    }
+    fetchCoordsByIP(ip, (error, coords) => {
+      if (error) {
+        callback(error, null);
+        return;
+      }
+      fetchISSFlyOverTimes(coords, (error, passTimes) => {
+        if (error) {
+          callback(error, null);
+          return
+        }
+        callback(null, passTimes)
+      });
+    });
+
+    //server down cant use api
+    // const tempPassTimes = [
+    //   { duration: 529, risetime: 1630050397 },
+    //   { duration: 656, risetime: 1630056113 },
+    //   { duration: 630, risetime: 1630061954 },
+    //   { duration: 615, risetime: 1630067817 },
+    //   { duration: 652, risetime: 1630073643 }
+    // ]
+
+    // callback(null, tempPassTimes);
+  });
+};
+
+module.exports = { nextISSTimesForMYLocation };
