@@ -69,25 +69,25 @@ const nextISSTimesForMYLocation = function(callback) {
         callback(error, null);
         return;
       }
-      fetchISSFlyOverTimes(coords, (error, passTimes) => {
-        if (error) {
-          callback(error, null);
-          return
-        }
-        callback(null, passTimes)
-      });
+      // fetchISSFlyOverTimes(coords, (error, passTimes) => {
+      //   if (error) {
+      //     callback(error, null);
+      //     return
+      //   }
+      //   callback(null, passTimes)
+      // });
     });
 
     //server down cant use api
-    // const tempPassTimes = [
-    //   { duration: 529, risetime: 1630050397 },
-    //   { duration: 656, risetime: 1630056113 },
-    //   { duration: 630, risetime: 1630061954 },
-    //   { duration: 615, risetime: 1630067817 },
-    //   { duration: 652, risetime: 1630073643 }
-    // ]
+    const tempPassTimes = [
+      { duration: 529, risetime: 1630050397 },
+      { duration: 656, risetime: 1630056113 },
+      { duration: 630, risetime: 1630061954 },
+      { duration: 615, risetime: 1630067817 },
+      { duration: 652, risetime: 1630073643 }
+    ]
 
-    // callback(null, tempPassTimes);
+    callback(null, tempPassTimes);
   });
 };
 
