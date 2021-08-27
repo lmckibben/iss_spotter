@@ -41,24 +41,26 @@ const fetchCoordsByIP = function(ip, callback) {
 };
 
 const fetchISSFlyOverTimes = function(coords, callback) {
-  request(`http://api.open-notify.org/iss-pass.json?lat=${coords.latitude}&lon=${coords.longitude}`, (error, response, body) => {
+  const url = `http://api.open-notify.org/iss-pass.json?lat=${coords.latitude}&lon=${coords.longitude}`;
+
+  request(url, (error, response, body) => {
     if (error) {
       callback(error, null);
-      return
-    };
-    if (response.statusCode !== 200) {
-      const msg = `Status Code ${response.statusCode} when fetching passTimes from coordinates ${body}`;
-      callback(Error(msg), null);
       return;
-    };
-    console.log(body);
+    }
+
+    if (response.statusCode !== 200) {
+      callback(Error(`Status Code ${response.statusCode} when fetching ISS pass times: ${body}`), null);
+      return;
+    }
+
+    const passes = JSON.parse(body).response;
+    callback(null, passes);
   });
-  body = JSON.parse(body);
-  const passes = body.response;
-  callback(null, duration);
 };
 
-const nextISSTimesForMYLocation = function(callback) {
+
+const nextISSTimesForMyLocation = function(callback) {
   fetchMyIP((error, ip) => {
     if (error) {
       callback(error, null);
@@ -69,26 +71,26 @@ const nextISSTimesForMYLocation = function(callback) {
         callback(error, null);
         return;
       }
-      // fetchISSFlyOverTimes(coords, (error, passTimes) => {
-      //   if (error) {
-      //     callback(error, null);
-      //     return
-      //   }
-      //   callback(null, passTimes)
-      // });
+      fetchISSFlyOverTimes(coords, (error, passTimes) => {
+        if (error) {
+          callback(error, null);
+          return
+        }
+        callback(null, passTimes)
+      });
     });
 
     //server down cant use api
-    const tempPassTimes = [
-      { duration: 529, risetime: 1630050397 },
-      { duration: 656, risetime: 1630056113 },
-      { duration: 630, risetime: 1630061954 },
-      { duration: 615, risetime: 1630067817 },
-      { duration: 652, risetime: 1630073643 }
-    ]
+    // const tempPassTimes = [
+    //   { duration: 529, risetime: 1630050397 },
+    //   { duration: 656, risetime: 1630056113 },
+    //   { duration: 630, risetime: 1630061954 },
+    //   { duration: 615, risetime: 1630067817 },
+    //   { duration: 652, risetime: 1630073643 }
+    // ]
 
-    callback(null, tempPassTimes);
+    // callback(null, tempPassTimes);
   });
 };
 
-module.exports = { nextISSTimesForMYLocation };
+module.exports = { nextISSTimesForMyLocation };
